@@ -244,7 +244,7 @@ router.put("/:entityType/:id", (req, res) => {
 
   let updateObject = req.body;
 
-  if (req.body.id != storedEntity.id) {
+  if (req.body.id && req.body.id != storedEntity.id) {
     res.status(400).send("id can't be mutated");
   }
 
