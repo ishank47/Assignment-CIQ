@@ -9,7 +9,7 @@
 https://youtu.be/GQajzYzV5-U
 
 ### Hosted at
-Hosted API Endpoint: https://assignment-ciq.herokuapp.com/
+https://assignment-ciq.herokuapp.com/
 
 ### Documentation
 [Click here for all the implementation details and documentation](https://docs.google.com/document/d/1U7Mwk_d36z1C_NzK8ymIEqeh0xy5C8FEc6CQEl5Dndc/edit?usp=sharing)
