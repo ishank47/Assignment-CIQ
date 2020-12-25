@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const fs = require("fs");
+const { func } = require("joi");
 const { v4: uuidv4 } = require("uuid");
 
 // store is the runtime db
@@ -165,8 +166,19 @@ router.get("/", (req, res) => {
   res.send(Object.keys(store));
 });
 
+function respondWith404(res) {
+  res.status("404").send("Not Found");
+}
+
 // GET request to get a single entity by type
 router.get("/:entityType", (req, res) => {
+  let entityType = req.params.entityType;
+
+  console.log("pewpew1", store, entityType, entityType in store);
+  if (!(entityType in store)) {
+    console.log("pewpew");
+    respondWith404(res);
+  }
   let searchTerms = [].concat(req.query["_q"] || "");
   let sortOrder = req.query["_order"] || "asc";
   let sortKey = req.query["_sort"] || "id";
@@ -174,7 +186,6 @@ router.get("/:entityType", (req, res) => {
   delete filters["_q"];
   delete filters["_order"];
   delete filters["_sort"];
-
   res.send(
     filterSearchSort(
       store[req.params.entityType],
@@ -192,7 +203,7 @@ router.get("/:entityType/:id", (req, res) => {
   if (entity) {
     res.send(entity);
   } else {
-    res.status(404).send("Entity not found");
+    return respondWith404(res);
   }
 });
 
@@ -222,40 +233,36 @@ router.post("/:entityType", (req, res) => {
 });
 // Update an existing entity rowby id
 router.put("/:entityType/:id", (req, res) => {
-  try {
-    let storedEntity = filterEntityById(
-      store,
-      req.params.entityType,
-      req.params.id
-    );
-    if (!storedEntity) {
-      throw "Entity with the given id was not found";
-    }
-
-    let updateObject = req.body;
-
-    if (req.body.id) {
-      throw "Id can't be mutated";
-    }
-
-    mergedEntity = mergeEntities(storedEntity, updateObject);
-    store[req.params.entityType].map((obj) =>
-      obj.id === mergedEntity.id ? mergedEntity : obj
-    );
-
-    fs.writeFile(
-      "./db/store.json",
-      JSON.stringify(store, null, 4),
-      "utf8",
-      function cb(err) {
-        if (err) {
-        }
-      }
-    );
-    res.send(mergedEntity);
-  } catch (e) {
-    res.status(404).send(e);
+  let storedEntity = filterEntityById(
+    store,
+    req.params.entityType,
+    req.params.id
+  );
+  if (!storedEntity) {
+    respondWith404(res);
   }
+
+  let updateObject = req.body;
+
+  if (req.body.id != storedEntity.id) {
+    res.status(400).send("id can't be mutated");
+  }
+
+  mergedEntity = mergeEntities(storedEntity, updateObject);
+  store[req.params.entityType].map((obj) =>
+    obj.id === mergedEntity.id ? mergedEntity : obj
+  );
+
+  fs.writeFile(
+    "./db/store.json",
+    JSON.stringify(store, null, 4),
+    "utf8",
+    function cb(err) {
+      if (err) {
+      }
+    }
+  );
+  res.send(mergedEntity);
 });
 
 // Delete a existing entity row by id
@@ -276,7 +283,7 @@ router.delete("/:entityType/:id", (req, res) => {
       }
     );
   } else {
-    res.status(404).send("Entity Not Found");
+    respondWith404(res);
   }
 });
 
