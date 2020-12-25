@@ -5,6 +5,9 @@
 3. ``npm install``
 4. ``node index.js`` to start the server
 
-### API Endpoints
+### Video Demo
+https://youtu.be/GQajzYzV5-U
+
+### Documentation
 [Click here for all the implementation details and documentation](https://docs.google.com/document/d/1U7Mwk_d36z1C_NzK8ymIEqeh0xy5C8FEc6CQEl5Dndc/edit?usp=sharing)
 
