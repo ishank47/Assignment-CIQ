@@ -192,7 +192,7 @@ router.get("/:entityType/:id", (req, res) => {
   if (entity) {
     res.send(entity);
   } else {
-    res.status(400).send("Entity not found");
+    res.status(404).send("Entity not found");
   }
 });
 
@@ -214,7 +214,7 @@ router.post("/:entityType", (req, res) => {
     "utf8",
     function cb(err) {
       if (err) {
-        res.status(400).send("File write failed");
+        res.status(500).send("Could not save data");
       }
     }
   );
@@ -231,7 +231,9 @@ router.put("/:entityType/:id", (req, res) => {
     if (!storedEntity) {
       throw "Entity with the given id was not found";
     }
+
     let updateObject = req.body;
+
     if (req.body.id) {
       throw "Id can't be mutated";
     }
@@ -252,7 +254,7 @@ router.put("/:entityType/:id", (req, res) => {
     );
     res.send(mergedEntity);
   } catch (e) {
-    res.status(400).send(e);
+    res.status(404).send(e);
   }
 });
 
@@ -269,12 +271,12 @@ router.delete("/:entityType/:id", (req, res) => {
       "utf8",
       function cb(err) {
         if (err) {
-          res.status(400).send("File write failed");
+          res.status(500).send("Could not save data");
         }
       }
     );
   } else {
-    res.status(400).send("Entity Not Found");
+    res.status(404).send("Entity Not Found");
   }
 });
 
